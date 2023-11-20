@@ -1,2 +1,3 @@
-# einsum-mypy
-Mypy plugin for np.einsum
+# mypy-einsum
+
+Mypy plugin for NumPy/Jax/PyTorch einsum operations
