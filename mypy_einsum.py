@@ -9,6 +9,7 @@ einsum_function_names = {
     "numpy.core.einsumfunc.einsum_path",
     "jax.numpy.einsum",
     "jax.numpy.einsum_path",
+    "torch.functional.einsum",
 }
 
 
@@ -100,9 +101,10 @@ EINSUM = ErrorCode("einsum", "Check that Einsum notation is valid", "Einsum")
 
 def einsum_callback(ctx: FunctionSigContext):
     subscripts_arg = ctx.args[0][0]
+    operand_args = ctx.args[0][1:] if len(ctx.args) == 1 else ctx.args[1]
     if isinstance(subscripts_arg, StrExpr):
         try:
-            _parse_einsum_input(subscripts_arg.value, ctx.args[1])
+            _parse_einsum_input(subscripts_arg.value, operand_args)
         except ValueError as e:
             ctx.context.set_line(subscripts_arg)
             ctx.api.fail(e.args[0], ctx.context, code=EINSUM)
