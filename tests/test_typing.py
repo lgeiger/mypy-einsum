@@ -34,10 +34,27 @@ def _strip_filename(msg: str) -> tuple[int, str]:
     return int(lineno), msg.strip()
 
 
+def generate_test_cases(directory):
+    template_import_statement = "from array_module import einsum"
+    test_cases = (
+        ("numpy_einsum", "from numpy import einsum"),
+        ("numpy_einsum_path", "from numpy import einsum_path"),
+        ("jax_einsum", "from jax.numpy import einsum"),
+        ("jax_einsum_path", "from jax.numpy import einsum_path"),
+        ("torch_einsum", "from torch import einsum"),
+    )
+    with open(os.path.join(directory, "template_einsum_tests.pyi")) as template:
+        content = template.read()
+    for prefix, import_statement in test_cases:
+        with open(os.path.join(directory, f"generated_{prefix}_tests.pyi"), "w") as f:
+            f.write(content.replace(template_import_statement, import_statement))
+
+
 @pytest.fixture(scope="module", autouse=True)
 def run_mypy() -> None:
     split_pattern = re.compile(r"(\s+)?\^(\~+)?")
     for directory in (PASS_DIR, FAIL_DIR):
+        generate_test_cases(directory)
         # Run mypy
         stdout, stderr, exit_code = api.run(["--config-file", MYPY_INI, directory])
         if stderr:
@@ -64,7 +81,7 @@ def get_test_cases(directory: str) -> Iterator:
     for root, _, files in os.walk(directory):
         for fname in files:
             short_fname, ext = os.path.splitext(fname)
-            if ext in (".pyi", ".py"):
+            if fname != "template_einsum_tests.pyi" and ext in (".pyi", ".py"):
                 fullpath = os.path.join(root, fname)
                 yield pytest.param(fullpath, id=short_fname)
 

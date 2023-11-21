@@ -96,7 +96,18 @@ EINSUM = ErrorCode("einsum", "Check that Einsum notation is valid", "Einsum")
 
 def einsum_callback(ctx: FunctionSigContext):
     subscripts_arg = ctx.args[0][0]
-    operand_args = ctx.args[0][1:] if len(ctx.args) == 1 else ctx.args[1]
+    if len(ctx.args) == 1:
+        operand_args = ctx.args[0][1:]
+    elif (
+        ctx.default_signature.definition is not None
+        and ctx.default_signature.definition.fullname == "jax.numpy.einsum"
+        and len(ctx.args[1]) == 1
+        and ctx.default_signature.arg_names[:2] == [None, None]
+    ):
+        # Handle mismatched overload: https://github.com/google/jax/blob/49c80e68d105dc93e5f26ef15b434b279bf00a03/jax/_src/numpy/lax_numpy.py#L3376-L3386
+        operand_args = ctx.args[1] + ctx.args[2]
+    else:
+        operand_args = ctx.args[1]
     if isinstance(subscripts_arg, StrExpr):
         try:
             _parse_einsum_input(subscripts_arg.value, operand_args)

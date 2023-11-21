@@ -1,5 +1,9 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 mypy
 black
 ruff
 pytest
 numpy
+torch
+jax
