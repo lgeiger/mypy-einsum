@@ -31,11 +31,6 @@ def _parse_einsum_input(subscripts: str, operands: list):
 
     # Parse ellipses
     if "." in subscripts:
-        used = subscripts.replace(".", "").replace(",", "").replace("->", "")
-        unused = list(einsum_symbols_set - set(used))
-        ellipse_inds = "".join(unused)
-        longest = 0
-
         if "->" in subscripts:
             input_tmp, output_sub = subscripts.split("->")
             split_subscripts = input_tmp.split(",")
@@ -49,26 +44,24 @@ def _parse_einsum_input(subscripts: str, operands: list):
                 if (sub.count(".") != 3) or (sub.count("...") != 1):
                     raise ValueError("Invalid Ellipses.")
 
+                split_subscripts[num] = sub.replace("...", "")
+
         subscripts = ",".join(split_subscripts)
-        if longest == 0:
-            out_ellipse = ""
-        else:
-            out_ellipse = ellipse_inds[-longest:]
 
         if out_sub:
-            subscripts += "->" + output_sub.replace("...", out_ellipse)
+            subscripts += "->" + output_sub.replace("...", "")
         else:
             # Special care for outputless ellipses
             output_subscript = ""
             tmp_subscripts = subscripts.replace(",", "")
             for s in sorted(set(tmp_subscripts)):
-                if s not in (einsum_symbols):
+                if s not in einsum_symbols:
                     raise ValueError("Character %s is not a valid symbol." % s)
                 if tmp_subscripts.count(s) == 1:
                     output_subscript += s
-            normal_inds = "".join(sorted(set(output_subscript) - set(out_ellipse)))
+            normal_inds = "".join(sorted(set(output_subscript)))
 
-            subscripts += "->" + out_ellipse + normal_inds
+            subscripts += "->" + normal_inds
 
     # Build output string if does not exist
     if "->" in subscripts:
@@ -84,8 +77,10 @@ def _parse_einsum_input(subscripts: str, operands: list):
             if tmp_subscripts.count(s) == 1:
                 output_subscript += s
 
-    # Make sure output subscripts are in the input
+    # Make sure output subscripts are unique and in the input
     for char in output_subscript:
+        if output_subscript.count(char) != 1:
+            raise ValueError("Output character %s appeared multiple times." % char)
         if char not in input_subscripts:
             raise ValueError("Output character %s did not appear in the input" % char)
 
