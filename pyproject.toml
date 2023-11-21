@@ -16,3 +16,6 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/lgeiger/mypy-einsum"
 Issues = "https://github.com/lgeiger/mypy-einsum/issues"
+
+[tool.ruff]
+include = ["*.py", "**/pyproject.toml"]
