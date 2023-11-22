@@ -80,9 +80,11 @@ def _parse_einsum_input(subscripts: str, operands: list):
     # Make sure output subscripts are unique and in the input
     for char in output_subscript:
         if output_subscript.count(char) != 1:
-            raise ValueError("Output character %s appeared multiple times." % char)
+            raise ValueError(
+                "Output character %s appeared more than once in the output." % char
+            )
         if char not in input_subscripts:
-            raise ValueError("Output character %s did not appear in the input" % char)
+            raise ValueError("Output character %s did not appear in the input." % char)
 
     # Make sure number operands is equivalent to the number of terms
     if len(input_subscripts.split(",")) != len(operands):

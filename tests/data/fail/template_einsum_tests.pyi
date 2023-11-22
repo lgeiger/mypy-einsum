@@ -20,4 +20,4 @@ einsum("i->&", [0, 0])  # E: Character & is not a valid symbol
 
 einsum("i->ij", [0, 0])  # E: Output character j did not appear in the input
 
-einsum("ij->jij", [[0, 0], [0, 0]])  # E: Output character j appeared multiple times.
+einsum("ij->jij", [[0, 0], [0, 0]])  # E: Output character j appeared more than once in the output.
