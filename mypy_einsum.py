@@ -1,3 +1,4 @@
+from functools import partial
 from mypy.plugin import Plugin, FunctionSigContext
 from mypy.nodes import Expression, NameExpr, StrExpr, Var
 from mypy.errorcodes import ErrorCode
@@ -109,13 +110,12 @@ def _get_const_value(expr: Expression) -> str | None:
     return None
 
 
-def einsum_callback(ctx: FunctionSigContext):
+def einsum_callback(ctx: FunctionSigContext, fullname: str):
     subscripts_arg = ctx.args[0][0]
     if len(ctx.args) == 1:
         operand_args = ctx.args[0][1:]
     elif (
-        ctx.default_signature.definition is not None
-        and ctx.default_signature.definition.fullname == "jax.numpy.einsum"
+        fullname == "jax.numpy.einsum"
         and len(ctx.args[1]) == 1
         and ctx.default_signature.arg_names[:2] == [None, None]
     ):
@@ -141,7 +141,7 @@ def einsum_callback(ctx: FunctionSigContext):
 class EinsumPlugin(Plugin):
     def get_function_signature_hook(self, fullname: str):
         if fullname in einsum_function_names:
-            return einsum_callback
+            return partial(einsum_callback, fullname=fullname)
         return None
 
 
