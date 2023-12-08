@@ -73,3 +73,7 @@ Success: no issues found in 1 source file
 - [`jax.numpy.einsum`](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.einsum.html)
 - [`jax.numpy.einsum_path`](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.einsum_path.html)
 - [`torch.einsum`](https://pytorch.org/docs/stable/generated/torch.einsum.html)
+
+## Reporting Issues and Contributing
+
+`mypy_einsum` aims to never raise warnings for valid `einsum` operations. If you encounter a warning that you believe is incorrect, or think `mypy_einsum` is not reporting an error please let us know. Contributions are very welcome!
