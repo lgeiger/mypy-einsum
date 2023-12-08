@@ -1,4 +1,5 @@
 # fmt: off
+from typing import Final
 from array_module import einsum as einsum
 import numpy as np
 
@@ -21,3 +22,6 @@ einsum("i->&", [0, 0])  # E: Character & is not a valid symbol
 einsum("i->ij", [0, 0])  # E: Output character j did not appear in the input
 
 einsum("ij->jij", [[0, 0], [0, 0]])  # E: Output character j appeared more than once in the output.
+
+eq: Final = ""
+einsum(eq, 0, 0)  # E: Number of einsum subscripts must be equal to the number of operands. (eq == '')

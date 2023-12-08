@@ -1,6 +1,7 @@
 from mypy.plugin import Plugin, FunctionSigContext
-from mypy.nodes import StrExpr
+from mypy.nodes import Expression, NameExpr, StrExpr, Var
 from mypy.errorcodes import ErrorCode
+
 
 einsum_symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 einsum_symbols_set = set(einsum_symbols)
@@ -89,11 +90,23 @@ def _parse_einsum_input(subscripts: str, operands: list):
     # Make sure number operands is equivalent to the number of terms
     if len(input_subscripts.split(",")) != len(operands):
         raise ValueError(
-            "Number of einsum subscripts must be equal to the " "number of operands."
+            "Number of einsum subscripts must be equal to the number of operands."
         )
 
 
 EINSUM = ErrorCode("einsum", "Check that Einsum notation is valid", "Einsum")
+
+
+def _get_const_value(expr: Expression) -> str | None:
+    if isinstance(expr, StrExpr):
+        return expr.value
+    if isinstance(expr, NameExpr):
+        node = expr.node
+        if isinstance(node, Var) and node.is_final:
+            final_value = node.final_value
+            if isinstance(final_value, str):
+                return final_value
+    return None
 
 
 def einsum_callback(ctx: FunctionSigContext):
@@ -110,12 +123,17 @@ def einsum_callback(ctx: FunctionSigContext):
         operand_args = ctx.args[1] + ctx.args[2]
     else:
         operand_args = ctx.args[1]
-    if isinstance(subscripts_arg, StrExpr):
+
+    subscripts_value = _get_const_value(subscripts_arg)
+    if subscripts_value is not None:
         try:
-            _parse_einsum_input(subscripts_arg.value, operand_args)
+            _parse_einsum_input(subscripts_value, operand_args)
         except ValueError as e:
             ctx.context.set_line(subscripts_arg)
-            ctx.api.fail(e.args[0], ctx.context, code=EINSUM)
+            message = e.args[0]
+            if isinstance(subscripts_arg, NameExpr):
+                message += f" ({subscripts_arg.name} == '{subscripts_value}')"
+            ctx.api.fail(message, ctx.context, code=EINSUM)
 
     return ctx.default_signature
 
