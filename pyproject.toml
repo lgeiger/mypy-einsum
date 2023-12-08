@@ -1,6 +1,6 @@
 [project]
 name = "mypy-einsum"
-version = "0.1.0"
+version = "1.0.0"
 authors = [{ name = "Lukas Geiger", email = "lukas.geiger94@gmail.com" }]
 description = "Mypy plugin for NumPy/Jax/PyTorch einsum operations"
 readme = "README.md"
