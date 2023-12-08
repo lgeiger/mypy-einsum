@@ -54,7 +54,6 @@ def generate_test_cases(directory):
 def run_mypy() -> None:
     split_pattern = re.compile(r"(\s+)?\^(\~+)?")
     for directory in (PASS_DIR, FAIL_DIR):
-        generate_test_cases(directory)
         # Run mypy
         stdout, stderr, exit_code = api.run(["--config-file", MYPY_INI, directory])
         if stderr:
@@ -78,6 +77,7 @@ def run_mypy() -> None:
 
 
 def get_test_cases(directory: str) -> Iterator:
+    generate_test_cases(directory)
     for root, _, files in os.walk(directory):
         for fname in files:
             short_fname, ext = os.path.splitext(fname)
