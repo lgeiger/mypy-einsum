@@ -3,7 +3,9 @@
 `mypy_einsum` is a [Mypy](https://mypy.readthedocs.io/) plugin for type checking [`np.einsum`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html), [`jax.numpy.einsum`](https://jax.readthedocs.io/en/latest/_autosummary/jax.numpy.einsum.html), and [`torch.einsum`](https://pytorch.org/docs/stable/generated/torch.einsum.html) operations.
 
 The Einstein summation convention can be used to compute many multi-dimensional, linear algebraic array operations. `einsum` provides a succinct way of representing these.
-However, since `einsum` equations are passed as a string, it is very easy to overlook typos or other bugs as linters are unable to help. `mypy_einsum` is a [Mypy](https://mypy.readthedocs.io/) plugin that that is able to statically verify the correctness of `einsum` equations with needing to execute the code.
+
+However, since `einsum` equations are passed as a string, it is very easy to overlook typos or other bugs as linters are unable to help.
+`mypy_einsum` is a [Mypy](https://mypy.readthedocs.io/) plugin that that is able to statically verify the correctness of `einsum` equations with needing to execute the code.
 
 ## Installation
 
@@ -32,7 +34,7 @@ plugins = ["mypy_einsum"]
 
 ## Example
 
-Can you spot the error in the running code?
+Can you spot the 🐛 without running the code?
 
 ```python
 import numpy as np
@@ -42,7 +44,7 @@ a = np.arange(9).reshape(3, 3)
 np.einsum("ik,kj->ij", a)
 ```
 
-Well, you don't need to `mypy_einsum` can to it for you:
+`mypy_einsum` will catch it for you:
 
 ```shell
 ❯ mypy example.py --pretty
@@ -53,7 +55,7 @@ number of operands.  [einsum]
 Found 1 error in 1 file (checked 1 source file)
 ```
 
-And it's is pretty simple fix after reading the error message:
+After fixing it `mypy` will succeed 🎉:
 
 ```python
 np.einsum("ik,kj->ij", a, a)
