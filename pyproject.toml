@@ -1,16 +1,16 @@
 [project]
 name = "mypy-einsum"
 version = "0.1.0"
-authors = [
-  { name="Lukas Geiger", email="lukas.geiger94@gmail.com" },
-]
+authors = [{ name = "Lukas Geiger", email = "lukas.geiger94@gmail.com" }]
 description = "Mypy plugin for NumPy/Jax/PyTorch einsum operations"
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
 ]
 
 [project.urls]
